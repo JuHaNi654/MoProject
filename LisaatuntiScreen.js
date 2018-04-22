@@ -18,6 +18,8 @@ export default class LisaatuntiScreen extends React.Component {
       luokka: '',
       viikonpaiva: null,
       kurssit: [],
+      aloitukset: [],
+      lopetukset: [],
     };
   }
 
@@ -37,6 +39,18 @@ export default class LisaatuntiScreen extends React.Component {
         Alert.alert('Aseta viikonpäivä');
       }
     }
+/*
+    saveKurssi = () => {
+      db.transaction(tx => {
+        tx.executeSql('select aloitus from kurssit where viikonpaiva = ?', [this.state.viikonpaiva], (_, {rows}) =>
+          this.setState({aloitukset: rows._array}));
+        tx.executeSql('select lopetus from kurssit where viikonpaika = ?', [this.state.viikonpaika], (_, {rows}) =>
+          this.setState({lopetukset: rows._array}));
+      });
+      for()
+    }
+
+*/
 
 render() {
   return (

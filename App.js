@@ -6,14 +6,12 @@ import AloitusScreen from './AloitusScreen';
 import LukkariScreen from './LukkariScreen';
 import LisaatuntiScreen from './LisaatuntiScreen';
 import ViikonpaivatScreen from './ViikonpaivatScreen';
-import testiScreen from './testiScreen';
 
 const MyApp = StackNavigator({
   Aloitus: {screen: AloitusScreen},
   Kurssit: {screen: LukkariScreen},
   Opetustuntilisays: {screen: LisaatuntiScreen},
   Viikonpäivät: {screen: ViikonpaivatScreen},
-  testi: {screen: testiScreen}
 });
 
 export default class App extends React.Component {
