@@ -4,7 +4,15 @@ import { StackNavigator} from 'react-navigation';
 import { Button } from 'react-native-elements';
 
 export default class ViikonpaivatScreen extends React.Component {
-    static navigationOptions = {title: 'Viikonpäivät'};
+    static navigationOptions = {
+      title: 'Viikonpäivät',
+      headerTitleStyle: {
+        left: 75,
+        flex: 1,
+        width: '90%',
+        alignSelf:'center',
+      }
+    };
 
     render() {
       const {navigate} = this.props.navigation;

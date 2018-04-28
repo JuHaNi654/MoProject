@@ -1,13 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList, Picker, Alert, KeyboardAvoidingView, } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, Picker, Alert, KeyboardAvoidingView } from 'react-native';
 import { StackNavigator, StatusBar} from 'react-navigation'
 import { SQLite } from 'expo';
 import { Button } from 'react-native-elements';
+import { moment } from 'moment';
+
 
 const db = SQLite.openDatabase('coursedb.db');
 
 export default class LisaatuntiScreen extends React.Component {
-  static navigationOptions = {title: 'Lisää uusi kurssi'};
+
+  static navigationOptions = {
+    title: "Lisää uusi kurssi",
+    headerTitleStyle: {
+      left: 60,
+      flex: 1,
+      width: '90%',
+      alignSelf:'center',
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -18,127 +30,139 @@ export default class LisaatuntiScreen extends React.Component {
       luokka: '',
       viikonpaiva: null,
       kurssit: [],
-      aloitukset: [],
-      lopetukset: [],
+      kellonajat: [],
     };
   }
 
     componentDidMount() {
+      var moment = require('moment')
       db.transaction(tx => {
         tx.executeSql('create table if not exists kurssit (id integer primary key not null, aloitus time, lopetus time, kurssinimi text, kurssitunnus text, luokka text, viikonpaiva text);');
       });
+      this.saveKurssi();
     }
 
     saveKurssi = () => {
-      if (this.state.viikonpaiva != null) {
-        db.transaction(tx => {
-            tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
-            [this.state.aloitus, this.state.lopetus, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
-          }, null, Alert.alert('Tallennus onnistui'))
-      } else {
-        Alert.alert('Aseta viikonpäivä');
-      }
-    }
-/*
-    saveKurssi = () => {
+      var moment = require('moment');
+      const alku = moment.utc(this.state.aloitus, 'HH:mm').format('HH:mm');
+      const loppu = moment.utc(this.state.lopetus, 'HH:mm').format('HH:mm');
       db.transaction(tx => {
-        tx.executeSql('select aloitus from kurssit where viikonpaiva = ?', [this.state.viikonpaiva], (_, {rows}) =>
-          this.setState({aloitukset: rows._array}));
-        tx.executeSql('select lopetus from kurssit where viikonpaika = ?', [this.state.viikonpaika], (_, {rows}) =>
-          this.setState({lopetukset: rows._array}));
-      });
-      for()
-    }
+        tx.executeSql('select * from kurssit', [], (_, {rows}) =>
+        this.setState({kurssit: rows._array}));
+      })
+      for(var i = 0; i < this.state.kurssit.length; i++) {
+        const kurssit = this.state.kurssit[i];
+        if (this.state.viikonpaiva == null) {
+          Alert.alert('Aseta viikonpäivä!');
+          break;
+        } else if (alku >= kurssit.aloitus && alku <= kurssit.lopetus && this.state.viikonpaiva == kurssit.viikonpaiva ||
+          loppu >= kurssit.aloitus && loppu <= kurssit.lopetus && this.state.viikonpaiva == kurssit.viikonpaiva) {
+            Alert.alert('Kurssia ei lisätty.',
+                        'Syy: Asettamasi kurssin kellonajat menee toisen kurssin päälle.');
+            break;
+        } else {
+          Alert.alert('asd');
+        }
 
-*/
+        if (i + 1 === this.state.kurssit.length) {
+          db.transaction(tx => {
+            tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
+                          [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
+            }, null, Alert.alert('Tallennus onnistui'))
+          }
+        }
+      }
 
-render() {
-  return (
-        <KeyboardAvoidingView behavior="padding" style={styles.container}>
-          <View style={styles.timeTextBoxStyle}>
-            <View style={{flexDirection: 'row'}}>
+
+  render() {
+    return (
+          <KeyboardAvoidingView behavior="padding" style={styles.container}>
+            <View style={styles.timeTextBoxStyle}>
+              <View style={{flexDirection: 'row'}}>
+                <TextInput
+                  style={styles.timeInputstyle}
+                  keyboardType='numeric'
+                  placeholder='Aloitus'
+                  onChangeText={(aloitus) => this.setState({aloitus})}
+                  value={this.state.aloitus}/>
+                <Text> - </Text>
+                <TextInput
+                  style={styles.timeInputstyle}
+                  keyboardType='numeric'
+                  placeholder='Lopetus'
+                  onChangeText={(lopetus) => this.setState({lopetus})}
+                  value={this.state.lopetus}/>
+              </View>
               <TextInput
-                style={styles.timeInputstyle}
-                placeholder='Aloitus'
-                onChangeText={(aloitus) => this.setState({aloitus})}
-                value={this.state.aloitus}/>
-              <Text> - </Text>
+                style={styles.textInputStyle}
+                placeholder='Kurssinimi'
+                onChangeText={(kurssinimi) => this.setState({kurssinimi})}
+                value={this.state.kurssinimi}/>
               <TextInput
-                style={styles.timeInputstyle}
-                placeholder='Lopetus'
-                onChangeText={(lopetus) => this.setState({lopetus})}
-                value={this.state.lopetus}/>
+                style={styles.textInputStyle}
+                placeholder='Kurssitunnus'
+                onChangeText={(kurssitunnus) => this.setState({kurssitunnus})}
+                value={this.state.kurssitunnus}/>
+              <TextInput
+                style={styles.textInputStyle}
+                placeholder='Luokka'
+                onChangeText={(luokka) => this.setState({luokka})}
+                value={this.state.luokka}/>
             </View>
-            <TextInput
-              style={styles.textInputStyle}
-              placeholder='Kurssinimi'
-              onChangeText={(kurssinimi) => this.setState({kurssinimi})}
-              value={this.state.kurssinimi}/>
-            <TextInput
-              style={styles.textInputStyle}
-              placeholder='Kurssitunnus'
-              onChangeText={(kurssitunnus) => this.setState({kurssitunnus})}
-              value={this.state.kurssitunnus}/>
-            <TextInput
-              style={styles.textInputStyle}
-              placeholder='Luokka'
-              onChangeText={(luokka) => this.setState({luokka})}
-              value={this.state.luokka}/>
-          </View>
-          <View>
-            <Picker
-              style={{width: 200}}
-              selectedValue={this.state.viikonpaiva}
-              onValueChange={(itemValue, itemIndex) => this.setState({viikonpaiva: itemValue})}>
-              <Picker.Item label={"Viikonpäivä"} value={null} />
-              <Picker.Item label={"maanantai"} value={"maanantai"} />
-              <Picker.Item label={"tiistai"} value={"tiistai"} />
-              <Picker.Item label={"keskiviikko"} value={"keskiviikko"} />
-              <Picker.Item label={"torstai"} value={"torstai"} />
-              <Picker.Item label={"perjantai"} value={"perjantai"} />
-            </Picker>
-          </View>
-          <Button buttonStyle={styles.buttonStyle} title="Lisää kurssi" onPress={this.saveKurssi}/>
-        </KeyboardAvoidingView>
-    );
+            <View>
+              <Picker
+                style={{width: 200}}
+                selectedValue={this.state.viikonpaiva}
+                onValueChange={(itemValue, itemIndex) => this.setState({viikonpaiva: itemValue})}>
+                <Picker.Item label={"Viikonpäivä"} value={null} />
+                <Picker.Item label={"maanantai"} value={"maanantai"} />
+                <Picker.Item label={"tiistai"} value={"tiistai"} />
+                <Picker.Item label={"keskiviikko"} value={"keskiviikko"} />
+                <Picker.Item label={"torstai"} value={"torstai"} />
+                <Picker.Item label={"perjantai"} value={"perjantai"} />
+              </Picker>
+            </View>
+            <Button buttonStyle={styles.buttonStyle} title="Lisää kurssi" onPress={this.saveKurssi}/>
+          </KeyboardAvoidingView>
+      );
+    }
   }
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  listcontainer: {
-   flexDirection: 'row',
-   backgroundColor: '#fff',
-   alignItems: 'center'
- },
- textInputStyle: {
-   width: 200,
-   borderColor: 'blue',
-   borderWidth:1,
-   textAlign: 'center',
-   marginBottom: 10,
-   borderRadius: 12,
- },
- timeInputstyle: {
-   width: 75,
-   borderColor: 'blue',
-   borderWidth:1,
-   textAlign: 'center',
-   marginBottom: 10,
-   borderRadius: 12,
- },
- timeTextBoxStyle: {
-   flexDirection: 'column',
-   justifyContent: 'center',
-   alignItems: 'center'
- },
- buttonStyle: {
-   backgroundColor: 'red',
-   borderRadius: 100,
- }
-});
+  const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      listcontainer: {
+       flexDirection: 'row',
+       backgroundColor: '#fff',
+       alignItems: 'center'
+     },
+     textInputStyle: {
+       width: 200,
+       borderColor: 'blue',
+       borderWidth:1,
+       textAlign: 'center',
+       marginBottom: 10,
+       borderRadius: 12,
+     },
+     timeInputstyle: {
+       width: 75,
+       borderColor: 'blue',
+       borderWidth:1,
+       textAlign: 'center',
+       marginBottom: 10,
+       borderRadius: 12,
+     },
+     timeTextBoxStyle: {
+       flexDirection: 'column',
+       justifyContent: 'center',
+       alignItems: 'center'
+     },
+     buttonStyle: {
+       backgroundColor: 'red',
+       borderRadius: 100,
+     }
+  });
