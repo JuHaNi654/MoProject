@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert, TouchableWithoutFeedback, Animated } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import { Button } from 'react-native-elements';
 import { SQLite } from 'expo';
@@ -15,12 +15,6 @@ export default class testiScreen extends React.Component {
     const { params } = navigation.state;
     return {
       title: params ? params.viikonpaiva : '',
-      headerTitleStyle: {
-        left: 85,
-        flex: 1,
-        width: '90%',
-        alignSelf:'center',
-      }
     }
   };
 
@@ -34,7 +28,7 @@ export default class testiScreen extends React.Component {
       luokka: '',
       viikonpaiva: '',
       paiva: '',
-      kurssit: []
+      kurssit: [],
     };
   }
 
@@ -56,6 +50,18 @@ export default class testiScreen extends React.Component {
     db.transaction(tx => {tx.executeSql('delete from kurssit where id = ?;', [id]);}, null, this.updateList)
   }
 
+  handlePressIn = (id) => {
+    Alert.alert(
+      'Varoitus',
+      'Haluatko poistaa valitsemasi kurssin?',
+      [
+        {text: 'Ei', onPress: () => Alert.alert('Toiminto Peruttiin')},
+        {text: 'Kyllä', onPress: () => this.deleteOppitunti(id)},
+      ],
+      { cancelable: false }
+    )
+
+  }
 
   render() {
     const {params} = this.props.navigation.state;
@@ -64,15 +70,19 @@ export default class testiScreen extends React.Component {
         <View>
           <FlatList
             style={{marginLeft: '7%'}}
-            keyExtractor={item => item.id}
-            renderItem={({item}) =>
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => (
+                  <TouchableWithoutFeedback
+                    delayPressIn={300}
+                    onPressIn={() => this.handlePressIn(item.id)}>
                     <View style={styles.infoBox}>
                       <Text syle={{Size: 20}}>{item.aloitus} - {item.lopetus}</Text>
-                      <Text style = {{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>{item.kurssinimi}</Text>
+                      <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>{item.kurssinimi}</Text>
                       <Text>{item.kurssitunnus}</Text>
                       <Text>{item.luokka}</Text>
-                      <Text style={{fontSize: 18, color: '#0000ff'}} onPress={() => this.deleteOppitunti(item.id)}>Poista</Text>
-                    </View>}
+                    </View>
+                  </TouchableWithoutFeedback>
+                )}
             data={this.state.kurssit} />
         </View>
       </View>
@@ -88,8 +98,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   infoBox: {
+    left: 30,
     fontWeight: 'bold',
-    width: 350,
+    width: '75%',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
