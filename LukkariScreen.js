@@ -48,6 +48,7 @@ export default class testiScreen extends React.Component {
 
   deleteOppitunti = (id) => {
     db.transaction(tx => {tx.executeSql('delete from kurssit where id = ?;', [id]);}, null, this.updateList)
+    Alert.alert('Kurssi poistettiin Lukkarista')
   }
 
   handlePressIn = (id) => {
@@ -76,10 +77,10 @@ export default class testiScreen extends React.Component {
                     delayPressIn={300}
                     onPressIn={() => this.handlePressIn(item.id)}>
                     <View style={styles.infoBox}>
-                      <Text syle={{Size: 20}}>{item.aloitus} - {item.lopetus}</Text>
+                      <Text style={{fontSize: 18, textAlign: 'center'}}>{item.aloitus} - {item.lopetus}</Text>
                       <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>{item.kurssinimi}</Text>
-                      <Text>{item.kurssitunnus}</Text>
-                      <Text>{item.luokka}</Text>
+                      <Text style={{fontSize: 15, textAlign: 'center'}}>{item.kurssitunnus}</Text>
+                      <Text style={{fontSize: 15, textAlign: 'center'}}>{item.luokka}</Text>
                     </View>
                   </TouchableWithoutFeedback>
                 )}
@@ -99,7 +100,6 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     left: 30,
-    fontWeight: 'bold',
     width: '75%',
     justifyContent: 'center',
     alignItems: 'center',

@@ -33,7 +33,6 @@ export default class LisaatuntiScreen extends React.Component {
       db.transaction(tx => {
         tx.executeSql('create table if not exists kurssit (id integer primary key not null, aloitus time, lopetus time, kurssinimi text, kurssitunnus text, luokka text, viikonpaiva text);');
       });
-      this.saveKurssi();
     }
 
     saveKurssi = () => {
@@ -44,10 +43,7 @@ export default class LisaatuntiScreen extends React.Component {
         tx.executeSql('select * from kurssit', [], (_, {rows}) =>
         this.setState({kurssit: rows._array}));
       })
-      if (this.state.aloitus == null && this.state.lopetus == null && this.state.kurssinimi == '' &&
-          this.state.kurssitunnus == '' && this.state.luokka == '' && this.state.viikonpaiva == null) {
-            return;
-      } else if (this.state.kurssit.length === 0 && this.state.viikonpaiva != null) {
+      if (this.state.kurssit.length === 0 && this.state.viikonpaiva != null) {
         db.transaction(tx => {
           tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
                         [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
@@ -55,7 +51,7 @@ export default class LisaatuntiScreen extends React.Component {
       } else {
       for (var i = 0; i < this.state.kurssit.length; i++) {
          const kurssit = this.state.kurssit[i];
-        console.log(kurssit.aloitus);
+         console.log(this.state.kurssit);
         if (this.state.viikonpaiva == null) {
           Alert.alert('Aseta viikonpäivä!');
           break;
