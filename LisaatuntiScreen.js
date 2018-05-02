@@ -29,21 +29,26 @@ export default class LisaatuntiScreen extends React.Component {
   }
 
     componentDidMount() {
-      var moment = require('moment')
       db.transaction(tx => {
         tx.executeSql('create table if not exists kurssit (id integer primary key not null, aloitus time, lopetus time, kurssinimi text, kurssitunnus text, luokka text, viikonpaiva text);');
       });
+      this.saveKurssi();
     }
 
     saveKurssi = () => {
       var moment = require('moment');
+      var i = 0;
       const alku = moment.utc(this.state.aloitus, 'HH:mm').format('HH:mm');
       const loppu = moment.utc(this.state.lopetus, 'HH:mm').format('HH:mm');
       db.transaction(tx => {
         tx.executeSql('select * from kurssit', [], (_, {rows}) =>
         this.setState({kurssit: rows._array}));
       })
-      if (this.state.kurssit.length === 0 && this.state.viikonpaiva != null) {
+      if (this.state.aloitus == null && this.state.lopetus == null && this.state.kurssinimi == '' &&
+          this.state.kurssitunnus == '' && this.state.luokka == '' && this.state.viikonpaiva == null) {
+            return;
+      }
+      else if (this.state.kurssit.length === 0 && this.state.viikonpaiva != null) {
         db.transaction(tx => {
           tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
                         [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
@@ -60,13 +65,12 @@ export default class LisaatuntiScreen extends React.Component {
             Alert.alert('Kurssia ei lisätty.',
                         'Syy: Asettamasi kurssin kellonajat menee toisen kurssin päälle.');
             break;
-        } else {
-          if (i === this.state.kurssit.length) {
-            db.transaction(tx => {
-              tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
-                            [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
-              }, null, Alert.alert('Tallennus onnistui'))
-              }
+        }
+        if ( i + 1  === this.state.kurssit.length) {
+          db.transaction(tx => {
+            tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
+                          [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
+            }, null, Alert.alert('Tallennus onnistui'))
           }
         }
       }
