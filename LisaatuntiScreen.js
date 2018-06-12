@@ -30,6 +30,7 @@ export default class LisaatuntiScreen extends React.Component {
 
     componentDidMount() {
       db.transaction(tx => {
+        tx.executeSql('drop table kurssit;');
         tx.executeSql('create table if not exists kurssit (id integer primary key not null, aloitus time, lopetus time, kurssinimi text, kurssitunnus text, luokka text, viikonpaiva text);');
       });
       this.saveKurssi();
@@ -56,7 +57,6 @@ export default class LisaatuntiScreen extends React.Component {
       } else {
       for (var i = 0; i < this.state.kurssit.length; i++) {
          const kurssit = this.state.kurssit[i];
-         console.log(this.state.kurssit);
         if (this.state.viikonpaiva == null) {
           Alert.alert('Aseta viikonpäivä!');
           break;
