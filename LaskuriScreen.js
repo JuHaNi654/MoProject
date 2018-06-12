@@ -34,6 +34,20 @@ export default class LaskuriScreen extends React.Component{
     const keskiarvo = this.state.kokonaisMaara / this.state.kokonaisOpMaara;
     this.setState({keskiarvo: keskiarvo});
   }
+  numberOnly1 = (opintopiste) => {
+    if(/^\d+$/.test(opintopiste)) {
+      this.setState({
+        opintopiste: opintopiste
+      });
+    }
+  }
+  numberOnly2 = (arvosana) => {
+    if(/^\d+$/.test(arvosana)) {
+      this.setState({
+        arvosana: arvosana
+      });
+    }
+  }
 
   render() {
     return (
@@ -47,23 +61,25 @@ export default class LaskuriScreen extends React.Component{
             <TextInput
               keyboardType='numeric'
               style={{width: 50, textAlign: 'center', marginLeft: 10, fontSize: 18}}
-              onChangeText={(opintopiste) => this.setState({opintopiste})}
+              onChangeText={this.numberOnly1}
               value={this.state.opintopiste}
-              maxLength={2}
+
             />
+            <Text style={styles.textStyles}>op</Text>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.textStyles}>Arvosana:</Text>
             <TextInput
               keyboardType='numeric'
               style={{width: 50, textAlign: 'center', marginLeft: 33, fontSize:18}}
-              onChangeText={(arvosana) => this.setState({arvosana})}
+              onChangeText={this.numberOnly2}
               value={this.state.arvosana}
               maxLength={1}
             />
           </View>
           <Button buttonStyle={styles.buttonStyle} title="Lisää" onPress={this.addArvo}/>
           <Button buttonStyle={styles.buttonStyle} title="Laske Keskiarvo" onPress={this.laskeKa}/>
+
         </KeyboardAvoidingView>
     );
   }

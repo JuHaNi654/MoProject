@@ -28,51 +28,72 @@ export default class LisaatuntiScreen extends React.Component {
     };
   }
 
-    componentDidMount() {
+  componentDidMount() {
       db.transaction(tx => {
-        tx.executeSql('drop table kurssit;');
         tx.executeSql('create table if not exists kurssit (id integer primary key not null, aloitus time, lopetus time, kurssinimi text, kurssitunnus text, luokka text, viikonpaiva text);');
+        tx.executeSql('select * from kurssit', [], (_, {rows}) => this.setState({kurssit: rows._array}));
       });
       this.saveKurssi();
     }
 
     saveKurssi = () => {
-      var moment = require('moment');
-      var i = 0;
-      const alku = moment.utc(this.state.aloitus, 'HH:mm').format('HH:mm');
-      const loppu = moment.utc(this.state.lopetus, 'HH:mm').format('HH:mm');
-      db.transaction(tx => {
-        tx.executeSql('select * from kurssit', [], (_, {rows}) =>
-        this.setState({kurssit: rows._array}));
-      })
       if (this.state.aloitus == null && this.state.lopetus == null && this.state.kurssinimi == '' &&
           this.state.kurssitunnus == '' && this.state.luokka == '' && this.state.viikonpaiva == null) {
             return;
-      }
-      else if (this.state.kurssit.length === 0 && this.state.viikonpaiva != null) {
-        db.transaction(tx => {
-          tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
-                        [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
-          }, null, Alert.alert('Tallennus onnistui'))
       } else {
-      for (var i = 0; i < this.state.kurssit.length; i++) {
-         const kurssit = this.state.kurssit[i];
-        if (this.state.viikonpaiva == null) {
-          Alert.alert('Aseta viikonpäivä!');
-          break;
-        } else if (alku >= this.state.kurssit[i].aloitus && alku <= this.state.kurssit[i].lopetus && this.state.viikonpaiva == this.state.kurssit[i].viikonpaiva ||
-          loppu >= this.state.kurssit[i].aloitus && loppu <= this.state.kurssit[i].lopetus && this.state.viikonpaiva == this.state.kurssit[i].viikonpaiva) {
-            Alert.alert('Kurssia ei lisätty.',
-                        'Syy: Asettamasi kurssin kellonajat menee toisen kurssin päälle.');
-            break;
-        }
-        if ( i + 1  === this.state.kurssit.length) {
-          db.transaction(tx => {
-            tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
-                          [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
-            }, null, Alert.alert('Tallennus onnistui'))
-          }
-        }
+      	var moment = require('moment');
+      	const alku = moment.utc(this.state.aloitus, 'HH:mm').format('HH:mm');
+      	const loppu = moment.utc(this.state.lopetus, 'HH:mm').format('HH:mm');
+      	if (this.state.kurssinimi == '') {
+      		Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      				          'Syy: Kurssinnimen kenttä on tyhjä');
+      		return;
+      	} else if (this.state.kurssitunnus == '') {
+      		Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      				          'Syy: Kurssitunnuksen kenttä on tyhjä');
+      		return;
+      	} else if (this.state.luokka == '') {
+      		Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      				          'Syy: Luokka kenttä on tyhjä');
+      		return;
+      	} else if (this.state.aloitus == null) {
+      		Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      				          'Syy: Kurssin aloitus kenttä on tyhjä');
+      		return;
+      	} else if (this.state.lopetus == null) {
+      		Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      				          'Syy: Kurssin lopetus kenttä on tyhjä');
+      		return;
+      	} else if (this.state.viikonpaiva == null) {
+      		Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      				          'Syy: Viikonpäivää ei ole valittuna');
+      		return;
+      	} else {
+      		if (this.state.kurssit.length === 0) {
+      			db.transaction(tx => {
+              tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
+                [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
+              tx.executeSql('select * from kurssit', [], (_, {rows}) => this.setState({kurssit: rows._array}));
+            }, null, Alert.alert('Tallennus onnistui'));
+      			return;
+      		} else {
+      			for(var i = 0;i < this.state.kurssit.length; i++) {
+      				const kurssit = this.state.kurssit[i];
+      				if (alku >= this.state.kurssit[i].aloitus && alku <= this.state.kurssit[i].lopetus && this.state.viikonpaiva == this.state.kurssit[i].viikonpaiva ||
+                			loppu >= this.state.kurssit[i].aloitus && loppu <= this.state.kurssit[i].lopetus && this.state.viikonpaiva == this.state.kurssit[i].viikonpaiva) {
+      					Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
+      							         'Syy: Asettamasi kurssin kellonajat menee toisen kurssin päälle.');
+      					break;
+      				} else if ( i + 1 === this.state.kurssit.length) {
+                db.transaction(tx => {
+                  tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
+                    [alku, loppu, this.state.kurssinimi, this.state.kurssitunnus, this.state.luokka, this.state.viikonpaiva]);
+                  tx.executeSql('select * from kurssit', [], (_, {rows}) => this.setState({kurssit: rows._array}));
+                }, null, Alert.alert('Tallennus onnistui'));
+      				}
+      			}
+      		}
+      	}
       }
     }
 

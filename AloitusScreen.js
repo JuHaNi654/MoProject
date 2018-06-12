@@ -29,7 +29,7 @@ export default class AloitusScreen extends React.Component {
             onPress={() => navigate('Opetustuntilisays')} title="Lisää Kurssi"/>
           <Button
             buttonStyle={styles.buttonstyle}
-            onPress={() => navigate('Laskuri')} title="Keskiarvon Laskuri"/>
+            onPress={() => navigate('Laskuri')} title="Keskiarvon Laskuri"/>            
         </View>
       </View>
     );
