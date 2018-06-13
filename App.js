@@ -7,6 +7,7 @@ import LukkariScreen from './LukkariScreen';
 import LisaatuntiScreen from './LisaatuntiScreen';
 import ViikonpaivatScreen from './ViikonpaivatScreen';
 import LaskuriScreen from './LaskuriScreen';
+import AsetuksetScreen from './AsetuksetScreen';
 
 
 const MyApp = StackNavigator({
@@ -15,6 +16,7 @@ const MyApp = StackNavigator({
   Opetustuntilisays: {screen: LisaatuntiScreen},
   Viikonpäivät: {screen: ViikonpaivatScreen},
   Laskuri: {screen: LaskuriScreen},
+  Asetukset: {screen: AsetuksetScreen},
 });
 
 export default class App extends React.Component {

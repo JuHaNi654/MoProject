@@ -51,36 +51,34 @@ export default class LaskuriScreen extends React.Component{
 
   render() {
     return (
-        <KeyboardAvoidingView behavior="padding" style={styles.container}>
-          <View style={{marginBottom: 15}}>
-            <Text style={styles.textStyles}>Opintopisteet Yhteensä: {this.state.kokonaisOpMaara}</Text>
-            <Text style={styles.textStyles}>Arvosanojen Keskiarvo: {this.state.keskiarvo}</Text>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={styles.textStyles}>Opinnon Laajuus:</Text>
-            <TextInput
-              keyboardType='numeric'
-              style={{width: 50, textAlign: 'center', marginLeft: 10, fontSize: 18}}
-              onChangeText={this.numberOnly1}
-              value={this.state.opintopiste}
-
-            />
-            <Text style={styles.textStyles}>op</Text>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={styles.textStyles}>Arvosana:</Text>
-            <TextInput
-              keyboardType='numeric'
-              style={{width: 50, textAlign: 'center', marginLeft: 33, fontSize:18}}
-              onChangeText={this.numberOnly2}
-              value={this.state.arvosana}
-              maxLength={1}
-            />
-          </View>
-          <Button buttonStyle={styles.buttonStyle} title="Lisää" onPress={this.addArvo}/>
-          <Button buttonStyle={styles.buttonStyle} title="Laske Keskiarvo" onPress={this.laskeKa}/>
-
-        </KeyboardAvoidingView>
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
+        <View style={{marginBottom: 15}}>
+          <Text style={styles.textStyles}>Opintopisteet Yhteensä: {this.state.kokonaisOpMaara}</Text>
+          <Text style={styles.textStyles}>Arvosanojen Keskiarvo: {this.state.keskiarvo}</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={styles.textStyles}>Opinnon Laajuus:</Text>
+          <TextInput
+          keyboardType='numeric'
+          style={{width: 50, textAlign: 'center', marginLeft: 10, fontSize: 18}}
+          onChangeText={this.numberOnly1}
+          value={this.state.opintopiste}
+          />
+          <Text style={styles.textStyles}>op</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={styles.textStyles}>Arvosana:</Text>
+          <TextInput
+          keyboardType='numeric'
+          style={{width: 50, textAlign: 'center', marginLeft: 33, fontSize:18}}
+          onChangeText={this.numberOnly2}
+          value={this.state.arvosana}
+          maxLength={1}
+        />
+        </View>
+        <Button buttonStyle={styles.buttonStyle} title="Lisää" onPress={this.addArvo}/>
+        <Button buttonStyle={styles.buttonStyle} title="Laske Keskiarvo" onPress={this.laskeKa}/>
+      </KeyboardAvoidingView>
     );
   }
 
