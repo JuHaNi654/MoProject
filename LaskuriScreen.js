@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView } from 'react-native';
-import { StackNavigator, StatusBar} from 'react-navigation'
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, AsyncStorage } from 'react-native';
+import { StackNavigator, StatusBar} from 'react-navigation';
 import { Button } from 'react-native-elements';
+import styles from './style';
 
 export default class LaskuriScreen extends React.Component{
   static navigationOptions = {
@@ -15,8 +16,25 @@ export default class LaskuriScreen extends React.Component{
       kokonaisMaara: 0,
       kokonaisOpMaara: 0,
       keskiarvo: 0,
+      style: {
+        backgroundColor: '',
+      },
     };
   }
+  componentDidMount() {
+    this.loadSettings();
+  }
+  loadSettings = async () => {
+    try {
+      let setColor = await AsyncStorage.getItem('settings');
+      this.setState({
+        style: {backgroundColor: setColor}
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   addArvo = () => {
     var yhteensa = 0;
     const kokonaisOpMaara = this.state.kokonaisOpMaara + parseInt(this.state.opintopiste);
@@ -53,11 +71,11 @@ export default class LaskuriScreen extends React.Component{
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <View style={{marginBottom: 15}}>
-          <Text style={styles.textStyles}>Opintopisteet Yhteensä: {this.state.kokonaisOpMaara}</Text>
-          <Text style={styles.textStyles}>Arvosanojen Keskiarvo: {this.state.keskiarvo}</Text>
+          <Text style={styles.la_textStyles}>Opintopisteet Yhteensä: {this.state.kokonaisOpMaara}</Text>
+          <Text style={styles.la_textStyles}>Arvosanojen Keskiarvo: {this.state.keskiarvo}</Text>
         </View>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.textStyles}>Opinnon Laajuus:</Text>
+          <Text style={styles.la_textStyles}>Opinnon Laajuus:</Text>
           <TextInput
           keyboardType='numeric'
           style={{width: 50, textAlign: 'center', marginLeft: 10, fontSize: 18}}
@@ -67,7 +85,7 @@ export default class LaskuriScreen extends React.Component{
           <Text style={styles.textStyles}>op</Text>
         </View>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.textStyles}>Arvosana:</Text>
+          <Text style={styles.la_textStyles}>Arvosana:</Text>
           <TextInput
           keyboardType='numeric'
           style={{width: 50, textAlign: 'center', marginLeft: 33, fontSize:18}}
@@ -76,28 +94,14 @@ export default class LaskuriScreen extends React.Component{
           maxLength={1}
         />
         </View>
-        <Button buttonStyle={styles.buttonStyle} title="Lisää" onPress={this.addArvo}/>
-        <Button buttonStyle={styles.buttonStyle} title="Laske Keskiarvo" onPress={this.laskeKa}/>
+        <Button buttonStyle={[ styles.la_redColor, this.state.style]}
+          title="Lisää"
+          onPress={this.addArvo}/>
+        <Button buttonStyle={[ styles.la_redColor, this.state.style ]}
+          title="Laske Keskiarvo"
+          onPress={this.laskeKa}/>
       </KeyboardAvoidingView>
     );
   }
 
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonStyle: {
-    backgroundColor: 'red',
-    borderRadius: 100,
-    width: 200,
-    marginTop: 10,
-  },
-  textStyles: {
-    fontSize: 18,
-  }
-});

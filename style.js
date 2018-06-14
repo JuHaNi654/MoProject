@@ -69,33 +69,20 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   al_redColor: {
-    backgroundColor: 'red',
+    backgroundColor: 'yellow',
     borderRadius: 12,
     width: 300,
     marginBottom: 10,
   },
-  al_blueColor: {
-    backgroundColor: 'blue',
-    borderRadius: 12,
-    width: 300,
-    marginBottom: 10,
+// Styles for LaskuriScreen.js
+  la_textStyles: {
+    fontSize: 18,
   },
-  al_greenColor: {
-    backgroundColor: 'green',
-    borderRadius: 12,
-    width: 300,
-    marginBottom: 10,
+  la_redColor: {
+    backgroundColor: 'yellow',
+    borderRadius: 100,
+    width: 200,
+    marginTop: 10,
   },
-  al_purpleColor: {
-    backgroundColor: 'purple',
-    borderRadius: 12,
-    width: 300,
-    marginBottom: 10,
-  },
-  al_defaultColor: {
-    backgroundColor: 'red',
-    borderRadius: 12,
-    width: 300,
-    marginBottom: 10,
-  },
+
 });

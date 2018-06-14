@@ -2,43 +2,33 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, Picker, AsyncStorage } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import { Button } from 'react-native-elements';
-import styles from './style'
+import styles from './style';
 
 export default class AloitusScreen extends React.Component {
   static navigationOptions = {header: null};
-
   constructor(props) {
     super(props)
     this.state = {
-      red: null,
-      blue: null,
-      purple: null,
-      green: null,
+      style: {
+        backgroundColor: '',
+      }
     };
   }
-
   componentDidMount() {
     this.loadSettings();
   }
-
   loadSettings = async () => {
     try {
-      let settings = await AsyncStorage.getItem('settings');
-      let parsed = JSON.parse(settings);
-      this.deploySettings(parsed);
+      let setColor = await AsyncStorage.getItem('settings');
+      this.setState({
+        style: {backgroundColor: setColor}
+      });
     } catch (error) {
       console.log(error);
     }
   }
 
-  deploySettings = (parsed) => {
-    this.setState({
-      red: parsed.red,
-      blue: parsed.blue,
-      green: parsed.green,
-      purple: parsed.purple
-    });
-  }
+
   render() {
     const {navigate} = this.props.navigation;
     return (
@@ -56,16 +46,16 @@ export default class AloitusScreen extends React.Component {
           alignItems: 'center',
         }}>
           <Button
-            buttonStyle={ this.state.red ? styles.al_redColor : this.state.blue ? styles.al_blueColor : this.state.green ? styles.al_greenColor : this.state.purple ? styles.al_purpleColor : styles.al_defaultColor }
+            buttonStyle={[ styles.al_redColor, this.state.style ]}
             onPress={() => navigate('Viikonpäivät')} title="Lukkari"/>
           <Button
-            buttonStyle={ this.state.red ? styles.al_redColor : this.state.blue ? styles.al_blueColor : this.state.green ? styles.al_greenColor : this.state.purple ? styles.al_purpleColor : styles.al_defaultColor }
+            buttonStyle={[ styles.al_redColor, this.state.style ]}
             onPress={() => navigate('Opetustuntilisays')} title="Lisää Kurssi"/>
           <Button
-            buttonStyle={ this.state.red ? styles.al_redColor : this.state.blue ? styles.al_blueColor : this.state.green ? styles.al_greenColor : this.state.purple ? styles.al_purpleColor : styles.al_defaultColor }
+            buttonStyle={[ styles.al_redColor, this.state.style ]}
             onPress={() => navigate('Laskuri')} title="Keskiarvon Laskuri"/>
           <Button
-            buttonStyle={ this.state.red ? styles.al_redColor : this.state.blue ? styles.al_blueColor : this.state.green ? styles.al_greenColor : this.state.purple ? styles.al_purpleColor : styles.al_defaultColor }
+            buttonStyle={[ styles.al_redColor, this.state.style ]}
             onPress={() => navigate('Asetukset')} title="Asetukset"/>
         </View>
       </View>

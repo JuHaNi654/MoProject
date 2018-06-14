@@ -5,65 +5,72 @@ import { Button } from 'react-native-elements';
 import styles from './style'
 
 export default class AsetuksetScreen extends React.Component{
-  static navigationOptions = {
-    title: 'Asetukset'
-  };
+  static navigationOptions = {header: null};
   constructor(props) {
     super(props)
     this.state = {
       red: null,
       blue: null,
-      purple: null,
       green: null,
+      purple: null,
+      style: {
+        backgroundColor: '',
+      }
     };
   }
 
   componentDidMount() {
-    this.loadSettings()
+    this.loadSettings();
   }
-
   saveSettings = () => {
-    let settings = {
+    let style = this.state.style.backgroundColor;
+    let boolVal = {
       red: this.state.red,
-      green: this.state.green,
       blue: this.state.blue,
-      purple: this.state.purple,
+      green: this.state.green,
+      purple: this.state.purple
     }
-    AsyncStorage.setItem('settings', JSON.stringify(settings));
+    AsyncStorage.setItem('boolValues', JSON.stringify(boolVal));
+    AsyncStorage.setItem('settings', style);
     this.loadSettings();
   }
   loadSettings = async () => {
     try {
-      let settings = await AsyncStorage.getItem('settings');
-      let parsed = JSON.parse(settings);
-      this.deploySettings(parsed);
+      let boolVal = await AsyncStorage.getItem('boolValues');
+      let parsed = JSON.parse(boolVal);
+      let setColor = await AsyncStorage.getItem('settings');
+      this.deploySettings(setColor, parsed);
     } catch (error) {
       console.log(error);
     }
   }
-  deploySettings = (parsed) => {
+  deploySettings = (setColor, parsed) => {
     this.setState({
       red: parsed.red,
       blue: parsed.blue,
       green: parsed.green,
-      purple: parsed.purple
+      purple: parsed.purple,
+      style: {backgroundColor: setColor}
     });
   }
+
 
   setColorRed = () => {
     this.setState({
       red: true,
       blue: false,
+      green: false,
       purple: false,
-      green: false
+      style: {backgroundColor: 'red'}
     });
   }
   setColorBlue = () => {
     this.setState({
       blue: true,
       red: false,
+      green: false,
       purple: false,
-      green: false
+      style: {backgroundColor: 'blue'}
     });
   }
   setColorGreen = () => {
@@ -71,7 +78,8 @@ export default class AsetuksetScreen extends React.Component{
       green: true,
       red: false,
       blue: false,
-      purple: false
+      purple: false,
+      style: {backgroundColor: 'green'}
     });
   }
   setColorPurple = () => {
@@ -79,7 +87,8 @@ export default class AsetuksetScreen extends React.Component{
       purple: true,
       red: false,
       blue: false,
-      green: false
+      green: false,
+      style: {backgroundColor: 'purple'}
     });
   }
 
@@ -89,36 +98,36 @@ export default class AsetuksetScreen extends React.Component{
       <View style={styles.container}>
         <View style={{flexDirection: 'row'}}>
           <TouchableHighlight
-            style={ this.state.red ? styles.as_redColor : styles.as_defaultColor}
+            style={[ styles.as_defaultColor, this.state.red ? this.state.style : null]}
             onPress={this.setColorRed}>
             <Text> Red </Text>
           </TouchableHighlight>
           <TouchableHighlight
-            style={ this.state.blue ? styles.as_blueColor : styles.as_defaultColor}
+            style={[ styles.as_defaultColor, this.state.blue ? this.state.style : null ]}
             onPress={this.setColorBlue}>
             <Text> Blue </Text>
           </TouchableHighlight>
         </View>
         <View style={{flexDirection: 'row'}}>
           <TouchableHighlight
-            style={ this.state.green ? styles.as_greenColor : styles.as_defaultColor}
+            style={[ styles.as_defaultColor, this.state.green ? this.state.style : null ]}
             onPress={this.setColorGreen}>
             <Text> Green </Text>
           </TouchableHighlight>
           <TouchableHighlight
-            style={ this.state.purple ? styles.as_purpleColor : styles.as_defaultColor}
+            style={[ styles.as_defaultColor, this.state.purple ? this.state.style : null]}
             onPress={this.setColorPurple}>
             <Text> Purple </Text>
           </TouchableHighlight>
         </View>
         <View>
           <TouchableHighlight
-            style={ this.state.red ? styles.as_redColor : this.state.blue ? styles.as_blueColor : this.state.green ? styles.as_greenColor : this.state.purple ? styles.as_purpleColor : styles.as_defaultColor}
+            style={[styles.as_defaultColor, this.state.style]}
             onPress={this.saveSettings}>
             <Text> Tallenna asetukset </Text>
           </TouchableHighlight>
           <TouchableHighlight
-            style={ this.state.red ? styles.as_redColor : this.state.blue ? styles.as_blueColor : this.state.green ? styles.as_greenColor : this.state.purple ? styles.as_purpleColor : styles.as_defaultColor}
+            style={[styles.as_defaultColor, this.state.style ]}
             onPress={() => navigate('Aloitus')}>
             <Text> Takaisin </Text>
           </TouchableHighlight>
