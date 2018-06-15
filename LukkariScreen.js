@@ -1,22 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Alert, TouchableWithoutFeedback, Animated } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert, TouchableWithoutFeedback, Animated, AsyncStorage } from 'react-native';
 import { StackNavigator} from 'react-navigation';
-import { Button } from 'react-native-elements';
+import { Header } from 'react-native-elements';
 import { SQLite } from 'expo';
 import { moment } from 'moment';
-
+import styles from './style';
 
 
 const db = SQLite.openDatabase('coursedb.db');
 
 export default class testiScreen extends React.Component {
-  //static navigationOptions = {title: 'Kurssit'};
-  static navigationOptions = ({ navigation }) => {
-    const { params } = navigation.state;
-    return {
-      title: params ? params.viikonpaiva : '',
-    }
-  };
+  static navigationOptions = {header: null};
 
   constructor(props) {
     super(props);
@@ -29,6 +23,12 @@ export default class testiScreen extends React.Component {
       viikonpaiva: '',
       paiva: '',
       kurssit: [],
+      borderStyle: {
+        borderColor: '',
+      },
+      backgroundStyle: {
+        backgroundColor: '',
+      }
     };
   }
 
@@ -36,6 +36,19 @@ export default class testiScreen extends React.Component {
     const {params} = this.props.navigation.state;
     this.setState({paiva: params.viikonpaiva});
     this.updateList();
+    this.loadSettings();
+  }
+
+  loadSettings = async () => {
+    try {
+      let setColor = await AsyncStorage.getItem('settings');
+      this.setState({
+        borderStyle:  {borderColor: setColor},
+        backgroundStyle: {backgroundColor: setColor}
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   updateList = () => {
@@ -67,45 +80,32 @@ export default class testiScreen extends React.Component {
   render() {
     const {params} = this.props.navigation.state;
     return (
-      <View>
-        <View>
-          <FlatList
-            style={{marginLeft: '7%'}}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({item}) => (
-                  <TouchableWithoutFeedback
-                    delayPressIn={300}
-                    onPressIn={() => this.handlePressIn(item.id)}>
-                    <View style={styles.infoBox}>
-                      <Text style={{fontSize: 18, textAlign: 'center'}}>{item.aloitus} - {item.lopetus}</Text>
-                      <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>{item.kurssinimi}</Text>
-                      <Text style={{fontSize: 15, textAlign: 'center'}}>{item.kurssitunnus}</Text>
-                      <Text style={{fontSize: 15, textAlign: 'center'}}>{item.luokka}</Text>
-                    </View>
-                  </TouchableWithoutFeedback>
-                )}
-            data={this.state.kurssit} />
+      <View style={{flex: 1}}>
+        <Header
+          centerComponent={{ text: params.viikonpaiva, style: {fontSize: 25, fontWeight: 'bold', color: 'white', fontStyle: 'italic'} }}
+          outerContainerStyles={[ styles.headerStyle, this.state.backgroundStyle ]}
+        />
+        <View style={{flex: 1}}>
+          <View>
+            <FlatList
+              style={{marginLeft: '7%'}}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => (
+                    <TouchableWithoutFeedback
+                      delayPressIn={300}
+                      onPressIn={() => this.handlePressIn(item.id)}>
+                      <View style={[styles.lu_infoBox, this.state.borderStyle]}>
+                        <Text style={{fontSize: 18, textAlign: 'center'}}>{item.aloitus} - {item.lopetus}</Text>
+                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>{item.kurssinimi}</Text>
+                        <Text style={{fontSize: 15, textAlign: 'center'}}>{item.kurssitunnus}</Text>
+                        <Text style={{fontSize: 15, textAlign: 'center'}}>{item.luokka}</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  )}
+              data={this.state.kurssit} />
+            </View>
         </View>
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  infoBox: {
-    left: 30,
-    width: '75%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'red',
-    borderRadius: 12,
-    marginTop: 15,
-  }
-});

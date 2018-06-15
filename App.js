@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Picker } from 'react-native';
+import { } from 'react-native';
 import { StackNavigator} from 'react-navigation'
-import { SQLite } from 'expo';
 import AloitusScreen from './AloitusScreen';
 import LukkariScreen from './LukkariScreen';
 import LisaatuntiScreen from './LisaatuntiScreen';
@@ -20,7 +19,6 @@ const MyApp = StackNavigator({
 });
 
 export default class App extends React.Component {
-
   render() {
     return <MyApp/>;
   }

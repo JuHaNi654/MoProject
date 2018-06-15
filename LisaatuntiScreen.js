@@ -1,30 +1,32 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList, Picker, Alert, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, Picker, Alert, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { StackNavigator, StatusBar} from 'react-navigation'
 import { SQLite } from 'expo';
-import { Button } from 'react-native-elements';
+import { Button, Header } from 'react-native-elements';
 import { moment } from 'moment';
-
+import styles from './style';
 
 const db = SQLite.openDatabase('coursedb.db');
 
 export default class LisaatuntiScreen extends React.Component {
-
-  static navigationOptions = {
-    title: "Lisää uusi kurssi"
-  }
-
+  static navigationOptions = {header: null};
   constructor(props) {
     super(props);
     this.state = {
-      aloitus: null,
-      lopetus: null,
+      aloitus: '',
+      lopetus: '',
       kurssinimi: '',
       kurssitunnus: '',
       luokka: '',
       viikonpaiva: null,
       kurssit: [],
       kellonajat: [],
+      style: {
+        backgroundColor: '',
+      },
+      borderStyle: {
+        borderColor: '',
+      },
     };
   }
 
@@ -34,16 +36,25 @@ export default class LisaatuntiScreen extends React.Component {
       tx.executeSql('select * from kurssit', [], (_, {rows}) => this.setState({kurssit: rows._array}));
     });
     this.saveKurssi();
+    this.loadSettings();
+  }
+  loadSettings = async () => {
+    try {
+      let setColor = await AsyncStorage.getItem('settings');
+      this.setState({
+        style: {backgroundColor: setColor},
+        borderStyle:  {borderColor: setColor}
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   saveKurssi = () => {
-    if (this.state.aloitus == null && this.state.lopetus == null && this.state.kurssinimi == '' &&
+    if (this.state.aloitus == '' && this.state.lopetus == '' && this.state.kurssinimi == '' &&
     this.state.kurssitunnus == '' && this.state.luokka == '' && this.state.viikonpaiva == null) {
       return;
     } else {
-      var moment = require('moment');
-      const alku = moment.utc(this.state.aloitus, 'HH:mm').format('HH:mm');
-      const loppu = moment.utc(this.state.lopetus, 'HH:mm').format('HH:mm');
       if (this.state.kurssinimi == '') {
         Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
         'Syy: Kurssinimen kenttä on tyhjä');
@@ -56,11 +67,11 @@ export default class LisaatuntiScreen extends React.Component {
         Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
         'Syy: Luokka kenttä on tyhjä');
         return;
-      } else if (this.state.aloitus == null) {
+      } else if (this.state.aloitus == '') {
         Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
         'Syy: Kurssin aloitus kenttä on tyhjä');
         return;
-      } else if (this.state.lopetus == null) {
+      } else if (this.state.lopetus == '') {
         Alert.alert('Kurssia ei lisätty lukujärjestykseen!',
         'Syy: Kurssin lopetus kenttä on tyhjä');
         return;
@@ -69,6 +80,9 @@ export default class LisaatuntiScreen extends React.Component {
         'Syy: Viikonpäivä ei ole valittuna');
         return;
       } else {
+        var moment = require('moment');
+        const alku = moment.utc(this.state.aloitus, 'HH:mm').format('HH:mm');
+        const loppu = moment.utc(this.state.lopetus, 'HH:mm').format('HH:mm');
         if (this.state.kurssit.length === 0) {
           db.transaction(tx => {
             tx.executeSql('insert into kurssit (aloitus , lopetus, kurssinimi, kurssitunnus, luokka, viikonpaiva) values (?, ?, ?, ?, ?, ?)',
@@ -101,92 +115,57 @@ export default class LisaatuntiScreen extends React.Component {
     render() {
       return (
         <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <View style={styles.timeTextBoxStyle}>
-        <View style={{flexDirection: 'row'}}>
-        <TextInput
-        style={styles.timeInputstyle}
-        keyboardType='numeric'
-        placeholder='Aloitus'
-        onChangeText={(aloitus) => this.setState({aloitus})}
-        value={this.state.aloitus}/>
-        <Text> - </Text>
-        <TextInput
-        style={styles.timeInputstyle}
-        keyboardType='numeric'
-        placeholder='Lopetus'
-        onChangeText={(lopetus) => this.setState({lopetus})}
-        value={this.state.lopetus}/>
-        </View>
-        <TextInput
-        style={styles.textInputStyle}
-        placeholder='Kurssinimi'
-        onChangeText={(kurssinimi) => this.setState({kurssinimi})}
-        value={this.state.kurssinimi}/>
-        <TextInput
-        style={styles.textInputStyle}
-        placeholder='Kurssitunnus'
-        onChangeText={(kurssitunnus) => this.setState({kurssitunnus})}
-        value={this.state.kurssitunnus}/>
-        <TextInput
-        style={styles.textInputStyle}
-        placeholder='Luokka'
-        onChangeText={(luokka) => this.setState({luokka})}
-        value={this.state.luokka}/>
-        </View>
-        <View>
-        <Picker
-        style={{width: 200}}
-        selectedValue={this.state.viikonpaiva}
-        onValueChange={(itemValue, itemIndex) => this.setState({viikonpaiva: itemValue})}>
-        <Picker.Item label={"Viikonpäivä"} value={null} />
-        <Picker.Item label={"maanantai"} value={"maanantai"} />
-        <Picker.Item label={"tiistai"} value={"tiistai"} />
-        <Picker.Item label={"keskiviikko"} value={"keskiviikko"} />
-        <Picker.Item label={"torstai"} value={"torstai"} />
-        <Picker.Item label={"perjantai"} value={"perjantai"} />
-        </Picker>
-        </View>
-        <Button buttonStyle={styles.buttonStyle} title="Lisää kurssi" onPress={this.saveKurssi}/>
+          <Header
+            centerComponent={{ text: 'Lisää uusi kurssi', style: {fontSize: 25, fontWeight: 'bold', color: 'white', fontStyle: 'italic'} }}
+            outerContainerStyles={ [styles.headerStyle,  this.state.style] }
+          />
+          <View style={{flex: 1, marginTop: '10%'}}>
+              <View style={styles.li_timeTextBoxStyle}>
+                <View style={{flexDirection: 'row'}}>
+                  <TextInput
+                    style={[styles.li_timeInputstyle, this.state.borderStyle]}
+                    keyboardType='numeric'
+                    placeholder='Aloitus'
+                    onChangeText={(aloitus) => this.setState({aloitus})}
+                    value={this.state.aloitus}/>
+                  <Text> - </Text>
+                  <TextInput
+                    style={[styles.li_timeInputstyle, this.state.borderStyle]}
+                    keyboardType='numeric'
+                    placeholder='Lopetus'
+                    onChangeText={(lopetus) => this.setState({lopetus})}
+                    value={this.state.lopetus}/>
+                </View>
+                <TextInput
+                  style={[styles.li_textInputStyle, this.state.borderStyle]}
+                  placeholder='Kurssinimi'
+                  onChangeText={(kurssinimi) => this.setState({kurssinimi})}
+                  value={this.state.kurssinimi}/>
+                <TextInput
+                  style={[styles.li_textInputStyle, this.state.borderStyle]}
+                  placeholder='Kurssitunnus'
+                  onChangeText={(kurssitunnus) => this.setState({kurssitunnus})}
+                  value={this.state.kurssitunnus}/>
+                <TextInput
+                  style={[styles.li_textInputStyle, this.state.borderStyle]}
+                  placeholder='Luokka'
+                  onChangeText={(luokka) => this.setState({luokka})}
+                  value={this.state.luokka}/>
+                <Picker
+                  style={{width: 200}}
+                  selectedValue={this.state.viikonpaiva}
+                  onValueChange={(itemValue, itemIndex) => this.setState({viikonpaiva: itemValue})}>
+                  <Picker.Item label={"Viikonpäivä"} value={null} />
+                  <Picker.Item label={"maanantai"} value={"maanantai"} />
+                  <Picker.Item label={"tiistai"} value={"tiistai"} />
+                  <Picker.Item label={"keskiviikko"} value={"keskiviikko"} />
+                  <Picker.Item label={"torstai"} value={"torstai"} />
+                  <Picker.Item label={"perjantai"} value={"perjantai"} />
+                </Picker>
+              </View>
+              <Button buttonStyle={[styles.li_buttonStyle, this.state.style]} title="Lisää kurssi" onPress={this.saveKurssi}/>
+          </View>
         </KeyboardAvoidingView>
       );
     }
   }
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    listcontainer: {
-      flexDirection: 'row',
-      backgroundColor: '#fff',
-      alignItems: 'center'
-    },
-    textInputStyle: {
-      width: 200,
-      borderColor: 'blue',
-      borderWidth:1,
-      textAlign: 'center',
-      marginBottom: 10,
-      borderRadius: 12,
-    },
-    timeInputstyle: {
-      width: 75,
-      borderColor: 'blue',
-      borderWidth:1,
-      textAlign: 'center',
-      marginBottom: 10,
-      borderRadius: 12,
-    },
-    timeTextBoxStyle: {
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    buttonStyle: {
-      backgroundColor: 'red',
-      borderRadius: 100,
-    }
-  });
