@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, AsyncStorage, Alert } from 'react-native';
 import { StackNavigator, StatusBar} from 'react-navigation';
 import { Button, Header } from 'react-native-elements';
 import styles from './style';
@@ -35,41 +35,39 @@ export default class LaskuriScreen extends React.Component{
 
   addArvo = () => {
     var yhteensa = 0;
-    const kokonaisOpMaara = this.state.kokonaisOpMaara + parseInt(this.state.opintopiste);
-    yhteensa = parseInt(this.state.opintopiste) * parseInt(this.state.arvosana);
-    const kokonaisMaara = this.state.kokonaisMaara + yhteensa;
-    this.setState({
-      kokonaisOpMaara: kokonaisOpMaara,
-      kokonaisMaara: kokonaisMaara,
-      opintopiste: '',
-      arvosana: ''
-    });
+    if(/^\d+$/.test(this.state.opintopiste) && /^\d+$/.test(this.state.arvosana)) {
+      const kokonaisOpMaara = this.state.kokonaisOpMaara + parseInt(this.state.opintopiste);
+      yhteensa = parseInt(this.state.opintopiste) * parseInt(this.state.arvosana);
+      const kokonaisMaara = this.state.kokonaisMaara + yhteensa;
+      this.setState({
+        kokonaisOpMaara: kokonaisOpMaara,
+        kokonaisMaara: kokonaisMaara,
+        opintopiste: '',
+        arvosana: ''
+      });
+    } else {
+      Alert.alert('Aseta arvosana tai opintopiste numerona!');
+    }
   }
 
   laskeKa = () => {
     const keskiarvo = this.state.kokonaisMaara / this.state.kokonaisOpMaara;
     this.setState({keskiarvo: keskiarvo});
   }
-  numberOnly1 = (opintopiste) => {
-    if(/^\d+$/.test(opintopiste)) {
-      this.setState({
-        opintopiste: opintopiste
-      });
-    }
+  reset = () => {
+    this.setState({
+      kokonaisOpMaara: 0,
+      kokonaisMaara: 0,
+      keskiarvo: 0,
+      opintopiste: '',
+      arvosana: ''
+    });
   }
-  numberOnly2 = (arvosana) => {
-    if(/^\d+$/.test(arvosana)) {
-      this.setState({
-        arvosana: arvosana
-      });
-    }
-  }
-
   render() {
     return (
       <View style={styles.container}>
         <Header
-          centerComponent={{ text: 'Keskiarvon Laskuri', style: {fontSize: 25, fontWeight: 'bold', color: 'white', fontStyle: 'italic'} }}
+          centerComponent={{ text: 'Keskiarvo Laskuri', style: {fontSize: 25, fontWeight: 'bold', color: 'white', fontStyle: 'italic'} }}
           outerContainerStyles={ [styles.headerStyle,  this.state.style] }
         />
           <View style={{flex: 1, marginTop: "25%"}}>
@@ -82,7 +80,7 @@ export default class LaskuriScreen extends React.Component{
                 <TextInput
                 keyboardType='numeric'
                 style={{width: 50, textAlign: 'center', fontSize: 18}}
-                onChangeText={this.numberOnly1}
+                onChangeText={(opintopiste) => this.setState({opintopiste})}
                 value={this.state.opintopiste}
                 />
                 <Text style={styles.la_textStyles}>op</Text>
@@ -92,7 +90,7 @@ export default class LaskuriScreen extends React.Component{
                 <TextInput
                 keyboardType='numeric'
                 style={{width: 50, textAlign: 'center', fontSize:18}}
-                onChangeText={this.numberOnly2}
+                onChangeText={(arvosana) => this.setState({arvosana})}
                 value={this.state.arvosana}
                 maxLength={1}
               />
@@ -104,6 +102,9 @@ export default class LaskuriScreen extends React.Component{
             <Button buttonStyle={[ styles.la_redColor, this.state.style ]}
               title="Laske Keskiarvo"
               onPress={this.laskeKa}/>
+            <Button buttonStyle={[ styles.la_redColor, this.state.style ]}
+              title="reset"
+              onPress={this.reset}/>
           </View>
       </View>
     );

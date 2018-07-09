@@ -53,7 +53,7 @@ export default class AloitusScreen extends React.Component {
             onPress={() => navigate('Opetustuntilisays')} title="Lisää Kurssi"/>
           <Button
             buttonStyle={[ styles.al_redColor, this.state.style ]}
-            onPress={() => navigate('Laskuri')} title="Keskiarvon Laskuri"/>
+            onPress={() => navigate('Laskuri')} title="Keskiarvo Laskuri"/>
           <Button
             buttonStyle={[ styles.al_redColor, this.state.style ]}
             onPress={() => navigate('Asetukset')} title="Asetukset"/>
