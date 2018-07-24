@@ -52,7 +52,7 @@ export default class LaskuriScreen extends React.Component{
 
   laskeKa = () => {
     const keskiarvo = this.state.kokonaisMaara / this.state.kokonaisOpMaara;
-    this.setState({keskiarvo: keskiarvo});
+    this.setState({keskiarvo: keskiarvo.toFixed(2)});
   }
   reset = () => {
     this.setState({
