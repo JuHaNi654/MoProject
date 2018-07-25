@@ -10,7 +10,7 @@ export default StyleSheet.create({
       justifyContent: 'center',
     },
     headerStyle: {
-      backgroundColor: 'red',
+      backgroundColor: 'black',
       width: width,
       height: '15%',
     },
@@ -21,7 +21,7 @@ export default StyleSheet.create({
     },
     as_deletButton: {
       justifyContent: 'center',
-      backgroundColor: '#DDDDDD',
+      backgroundColor: 'black',
       alignItems: 'center',
       width: 320,
       height: 75,
@@ -32,7 +32,7 @@ export default StyleSheet.create({
     },
     controllButtons: {
       justifyContent: 'center',
-      backgroundColor: '#DDDDDD',
+      backgroundColor: 'black',
       alignItems: 'center',
       padding: 10,
       width: 300,
@@ -67,8 +67,8 @@ export default StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
   },
-  al_redColor: {
-    backgroundColor: 'yellow',
+  al_defaultColor: {
+    backgroundColor: 'black',
     borderRadius: 12,
     width: 300,
     marginBottom: 10,
@@ -78,7 +78,7 @@ export default StyleSheet.create({
     fontSize: 18,
   },
   la_redColor: {
-    backgroundColor: 'yellow',
+    backgroundColor: 'black',
     borderRadius: 100,
     width: 200,
     marginTop: 10,
@@ -86,7 +86,7 @@ export default StyleSheet.create({
 // Styles for LisaatuntiScreen.js
   li_textInputStyle: {
     width: 200,
-    borderColor: 'blue',
+    borderColor: 'black',
     borderWidth: 3,
     textAlign: 'center',
     marginBottom: 10,
@@ -94,7 +94,7 @@ export default StyleSheet.create({
   },
   li_timeInputstyle: {
     width: 75,
-    borderColor: 'blue',
+    borderColor: 'black',
     borderWidth: 3,
     textAlign: 'center',
     marginBottom: 10,
@@ -107,7 +107,7 @@ export default StyleSheet.create({
   },
   li_buttonStyle: {
     justifyContent: 'center',
-    backgroundColor: '#DDDDDD',
+    backgroundColor: 'black',
     alignItems: 'center',
     width: 320,
     borderRadius: 12,
@@ -117,7 +117,7 @@ export default StyleSheet.create({
   },
 // Styles for ViikonpaivatScreen.js
   vp_buttonStyle: {
-    backgroundColor: 'red',
+    backgroundColor: 'black',
     borderRadius: 12,
     width: 300,
     marginBottom: 10,
@@ -129,7 +129,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: 'red',
+    borderColor: 'black',
     borderRadius: 12,
     marginTop: 15,
   },

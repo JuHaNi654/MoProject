@@ -14,9 +14,7 @@ export default class LaskuriScreen extends React.Component{
       kokonaisMaara: 0,
       kokonaisOpMaara: 0,
       keskiarvo: 0,
-      style: {
-        backgroundColor: '',
-      },
+      style: null
     };
   }
   componentDidMount() {
@@ -25,9 +23,11 @@ export default class LaskuriScreen extends React.Component{
   loadSettings = async () => {
     try {
       let setColor = await AsyncStorage.getItem('settings');
-      this.setState({
-        style: {backgroundColor: setColor}
-      });
+      if (setColor != null) {
+        this.setState({
+          style: {backgroundColor: setColor}
+        });
+      }
     } catch (error) {
       console.log(error);
     }

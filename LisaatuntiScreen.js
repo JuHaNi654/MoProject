@@ -41,10 +41,17 @@ export default class LisaatuntiScreen extends React.Component {
   loadSettings = async () => {
     try {
       let setColor = await AsyncStorage.getItem('settings');
-      this.setState({
-        style: {backgroundColor: setColor},
-        borderStyle:  {borderColor: setColor}
-      });
+      if (setColor != null) {
+        this.setState({
+          style: {backgroundColor: setColor},
+          borderStyle:  {borderColor: setColor}
+        });
+      } else {
+        this.setState({
+          style: null,
+          borderStyle: null
+        });
+      }
     } catch (error) {
       console.log(error);
     }

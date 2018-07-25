@@ -12,19 +12,17 @@ export default class AsetuksetScreen extends React.Component{
   constructor(props) {
     super(props)
     this.state = {
-      red: null,
-      blue: null,
-      green: null,
-      purple: null,
-      style: {
-        backgroundColor: ''
-      },
-
+      red: false,
+      blue: false,
+      green: false,
+      purple: false,
+      style: {backgroundColor: 'black'}
     };
   }
 
   componentDidMount() {
     this.loadSettings();
+
   }
   confirmationFunction = () => {
     Alert.alert(
@@ -44,16 +42,16 @@ export default class AsetuksetScreen extends React.Component{
   }
 
   saveSettings = () => {
-    let style = this.state.style.backgroundColor;
-    let boolVal = {
-      red: this.state.red,
-      blue: this.state.blue,
-      green: this.state.green,
-      purple: this.state.purple
-    }
-    AsyncStorage.setItem('boolValues', JSON.stringify(boolVal));
-    AsyncStorage.setItem('settings', style);
-    this.loadSettings();
+      let style = this.state.style.backgroundColor;
+      let boolVal = {
+        red: this.state.red,
+        blue: this.state.blue,
+        green: this.state.green,
+        purple: this.state.purple
+      }
+      AsyncStorage.setItem('boolValues', JSON.stringify(boolVal));
+      AsyncStorage.setItem('settings', style);
+      Alert.alert('Väri tallennettu');
   }
   loadSettings = async () => {
     try {
@@ -66,12 +64,22 @@ export default class AsetuksetScreen extends React.Component{
     }
   }
   deploySettings = (setColor, parsed) => {
+      this.setState({
+        red: parsed.red,
+        blue: parsed.blue,
+        green: parsed.green,
+        purple: parsed.purple,
+        style: {backgroundColor: setColor}
+      });
+  }
+
+  setDefdaultColor = () => {
     this.setState({
-      red: parsed.red,
-      blue: parsed.blue,
-      green: parsed.green,
-      purple: parsed.purple,
-      style: {backgroundColor: setColor}
+      red: false,
+      blue: false,
+      green: false,
+      purple: false,
+      style: {backgroundColor: 'black'}
     });
   }
 
@@ -111,6 +119,7 @@ export default class AsetuksetScreen extends React.Component{
       green: false,
       style: {backgroundColor: 'purple'}
     });
+
   }
 
   render() {
@@ -119,51 +128,60 @@ export default class AsetuksetScreen extends React.Component{
       <View style={styles.container}>
         <Header
           centerComponent={{ text: 'Asetukset', style: {fontSize: 25, fontWeight: 'bold', color: 'white', fontStyle: 'italic'} }}
-          outerContainerStyles={ [styles.headerStyle,  this.state.style] }
+          outerContainerStyles = {[styles.headerStyle, this.state.style]}
         />
-        <View style={{flex: 2, marginTop: '8%' }}>
-          <View style={{flexDirection: 'row'}}>
+        <ScrollView style={styles.container}>
+          <View style={{marginTop: '8%'}}>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableHighlight
+                style={[ styles.as_defaultColor, this.state.red ? this.state.style : null]}
+                onPress={this.setColorRed}>
+                <Text style={styles.as_textStyle}> Red </Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={[ styles.as_defaultColor, this.state.blue ? this.state.style : null ]}
+                onPress={this.setColorBlue}>
+                <Text style={styles.as_textStyle}> Blue </Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableHighlight
+                style={[ styles.as_defaultColor, this.state.green ? this.state.style : null ]}
+                onPress={this.setColorGreen}>
+                <Text style={styles.as_textStyle}> Green </Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={[ styles.as_defaultColor, this.state.purple ? this.state.style : null]}
+                onPress={this.setColorPurple}>
+                <Text style={styles.as_textStyle}> Purple </Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+          <View style={styles.container}>
             <TouchableHighlight
-              style={[ styles.as_defaultColor, this.state.red ? this.state.style : null]}
-              onPress={this.setColorRed}>
-              <Text style={styles.as_textStyle}> Red </Text>
+              style={[ styles.as_deletButton, this.state.style ]}
+              onPress={this.setDefdaultColor}>
+              <Text style={styles.as_textStyle}> Aseta default väri </Text>
             </TouchableHighlight>
             <TouchableHighlight
-              style={[ styles.as_defaultColor, this.state.blue ? this.state.style : null ]}
-              onPress={this.setColorBlue}>
-              <Text style={styles.as_textStyle}> Blue </Text>
+              style={[ styles.as_deletButton, this.state.style ]}
+              onPress={this.confirmationFunction}>
+              <Text style={styles.as_textStyle}> Tyhjennä Lukkarin tiedot </Text>
             </TouchableHighlight>
           </View>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{marginTop: '8%', alignItems: 'center',}}>
             <TouchableHighlight
-              style={[ styles.as_defaultColor, this.state.green ? this.state.style : null ]}
-              onPress={this.setColorGreen}>
-              <Text style={styles.as_textStyle}> Green </Text>
+              style={[styles.controllButtons, this.state.style]}
+              onPress={this.saveSettings}>
+              <Text style={styles.as_textStyle}> Tallenna asetettu väri </Text>
             </TouchableHighlight>
             <TouchableHighlight
-              style={[ styles.as_defaultColor, this.state.purple ? this.state.style : null]}
-              onPress={this.setColorPurple}>
-              <Text style={styles.as_textStyle}> Purple </Text>
+              style={[styles.controllButtons, this.state.style ]}
+              onPress={() => navigate('Aloitus')}>
+              <Text style={styles.as_textStyle}> Takaisin </Text>
             </TouchableHighlight>
           </View>
-          <TouchableHighlight
-            style={[ styles.as_deletButton, this.state.style ]}
-            onPress={this.confirmationFunction}>
-            <Text style={styles.as_textStyle}> Tyhjennä Lukkarin tiedot </Text>
-          </TouchableHighlight>
-        </View>
-        <View style={{flex: 1}}>
-          <TouchableHighlight
-            style={[styles.controllButtons, this.state.style]}
-            onPress={this.saveSettings}>
-            <Text style={styles.as_textStyle}> Tallenna asetukset </Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={[styles.controllButtons, this.state.style ]}
-            onPress={() => navigate('Aloitus')}>
-            <Text style={styles.as_textStyle}> Takaisin </Text>
-          </TouchableHighlight>
-        </View>
+        </ScrollView>
       </View>
       );
     }

@@ -1,1 +1,1 @@
-First React-Native school project. 
+First React-Native based school project. 

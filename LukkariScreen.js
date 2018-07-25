@@ -23,12 +23,12 @@ export default class testiScreen extends React.Component {
       viikonpaiva: '',
       paiva: '',
       kurssit: [],
+      style: {
+        backgroundColor: '',
+      },
       borderStyle: {
         borderColor: '',
       },
-      backgroundStyle: {
-        backgroundColor: '',
-      }
     };
   }
 
@@ -42,10 +42,17 @@ export default class testiScreen extends React.Component {
   loadSettings = async () => {
     try {
       let setColor = await AsyncStorage.getItem('settings');
-      this.setState({
-        borderStyle:  {borderColor: setColor},
-        backgroundStyle: {backgroundColor: setColor}
-      });
+      if (setColor != null) {
+        this.setState({
+          style: {backgroundColor: setColor},
+          borderStyle:  {borderColor: setColor}
+        });
+      } else {
+        this.setState({
+          style: null,
+          borderStyle: null
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +90,7 @@ export default class testiScreen extends React.Component {
       <View style={{flex: 1}}>
         <Header
           centerComponent={{ text: params.viikonpaiva, style: {fontSize: 25, fontWeight: 'bold', color: 'white', fontStyle: 'italic'} }}
-          outerContainerStyles={[ styles.headerStyle, this.state.backgroundStyle ]}
+          outerContainerStyles={[ styles.headerStyle, this.state.style ]}
         />
         <View style={{flex: 1}}>
           <View>

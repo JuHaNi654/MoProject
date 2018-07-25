@@ -9,9 +9,7 @@ export default class AloitusScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      style: {
-        backgroundColor: '',
-      }
+      style: null
     };
   }
   componentDidMount() {
@@ -20,15 +18,17 @@ export default class AloitusScreen extends React.Component {
   loadSettings = async () => {
     try {
       let setColor = await AsyncStorage.getItem('settings');
-      this.setState({
-        style: {backgroundColor: setColor}
-      });
+      if (setColor != null) {
+        this.setState({
+          style: {backgroundColor: setColor}
+        });
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
-
+ //{[(this.state.style == null) ? styles.headerStyle : styles.headerStyle, this.state.style]}
   render() {
     const {navigate} = this.props.navigation;
     return (
@@ -46,16 +46,16 @@ export default class AloitusScreen extends React.Component {
           alignItems: 'center',
         }}>
           <Button
-            buttonStyle={[ styles.al_redColor, this.state.style ]}
+            buttonStyle={[ styles.al_defaultColor, this.state.style ]}
             onPress={() => navigate('Viikonpäivät')} title="Lukkari"/>
           <Button
-            buttonStyle={[ styles.al_redColor, this.state.style ]}
+            buttonStyle={[ styles.al_defaultColor, this.state.style ]}
             onPress={() => navigate('Opetustuntilisays')} title="Lisää Kurssi"/>
           <Button
-            buttonStyle={[ styles.al_redColor, this.state.style ]}
+            buttonStyle={[ styles.al_defaultColor, this.state.style ]}
             onPress={() => navigate('Laskuri')} title="Keskiarvo Laskuri"/>
           <Button
-            buttonStyle={[ styles.al_redColor, this.state.style ]}
+            buttonStyle={[ styles.al_defaultColor, this.state.style ]}
             onPress={() => navigate('Asetukset')} title="Asetukset"/>
         </View>
       </View>

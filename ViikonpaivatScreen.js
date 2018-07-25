@@ -9,9 +9,7 @@ export default class ViikonpaivatScreen extends React.Component {
     constructor(props) {
       super(props)
       this.state = {
-        style: {
-          backgroundColor: '',
-        }
+        style: null
       };
     }
     componentDidMount() {
@@ -20,9 +18,11 @@ export default class ViikonpaivatScreen extends React.Component {
     loadSettings = async () => {
       try {
         let setColor = await AsyncStorage.getItem('settings');
-        this.setState({
-          style: {backgroundColor: setColor}
-        });
+        if (setColor != null) {
+          this.setState({
+            style: {backgroundColor: setColor}
+          });
+        }
       } catch (error) {
         console.log(error);
       }
